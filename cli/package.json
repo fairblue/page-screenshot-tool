@@ -1,0 +1,1 @@
+{"bin":{"page-screenshot":"./screenshot.mjs"},"dependencies":{"playwright":"^1.49.0"},"description":"複数のWebページ全体をPNG/JPEG画像として一括保存するCLIツール","license":"MIT","name":"page-screenshot-cli","scripts":{"start":"node screenshot.mjs"},"type":"module","version":"1.0.0"}

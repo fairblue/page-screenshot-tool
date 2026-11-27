@@ -1,0 +1,22 @@
+{
+  "manifest_version": 3,
+  "name": "ページ全体スクリーンショット",
+  "version": "1.0.0",
+  "description": "今見ているタブのページ全体を1枚のPNG画像で保存します。",
+  "permissions": ["activeTab", "scripting", "downloads", "contextMenus", "offscreen"],
+  "action": {
+    "default_title": "ページ全体を画像で保存"
+  },
+  "background": {
+    "service_worker": "background.js"
+  },
+  "commands": {
+    "capture-full-page": {
+      "suggested_key": {
+        "default": "Ctrl+Shift+S",
+        "mac": "Command+Shift+S"
+      },
+      "description": "ページ全体を画像で保存"
+    }
+  }
+}
