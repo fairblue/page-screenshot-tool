@@ -1,0 +1,249 @@
+<!doctype html>
+<html lang="ja">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>ページ全体スクリーンショット｜page-screenshot-tool（Chrome拡張＋一括保存CLI・OSS）</title>
+<meta name="description" content="ページ全体を1枚のPNGに保存できるオープンソースツール。Chrome拡張（ボタン1つ・ログイン中のページも可）と、URL一括保存CLI。データ収集ゼロ、コード全公開・MITライセンス。">
+<meta property="og:title" content="ページ全体スクリーンショット｜page-screenshot-tool（Chrome拡張＋一括保存CLI・OSS）">
+<meta property="og:description" content="ページ全体を1枚のPNGに保存できるオープンソースツール。Chrome拡張（ボタン1つ・ログイン中のページも可）と、URL一括保存CLI。データ収集ゼロ、コード全公開・MITライセンス。">
+<meta property="og:type" content="website">
+<meta name="theme-color" content="#0f172a">
+<style>
+  :root {
+    --bg: #0f172a;
+    --bg-2: #131d33;
+    --line: #22304d;
+    --text: #f1f5f9;
+    --muted: #9aa8bf;
+    --accent: #7dd3fc;
+    --accent-ink: #0b1324;
+    --radius: 12px;
+    --max: 960px;
+  }
+  *, *::before, *::after { box-sizing: border-box; }
+  html { -webkit-text-size-adjust: 100%; }
+  body {
+    margin: 0;
+    background: var(--bg);
+    color: var(--text);
+    font-family: system-ui, -apple-system, "Segoe UI", "Hiragino Sans", "Hiragino Kaku Gothic ProN", "Yu Gothic UI", "Meiryo", "Noto Sans JP", sans-serif;
+    font-size: 16px;
+    line-height: 1.8;
+    letter-spacing: 0.02em;
+    overflow-x: hidden;
+  }
+  img { max-width: 100%; height: auto; display: block; }
+  a { color: var(--accent); }
+  a:focus-visible, summary:focus-visible { outline: 2px solid var(--accent); outline-offset: 3px; border-radius: 4px; }
+  .wrap { width: 100%; max-width: var(--max); margin: 0 auto; padding: 0 20px; }
+  section { padding: 72px 0; border-top: 1px solid var(--line); }
+  h1, h2, h3 { line-height: 1.35; margin: 0; font-weight: 700; letter-spacing: 0.01em; }
+  h2 { font-size: clamp(1.35rem, 3.2vw, 1.75rem); margin-bottom: 32px; }
+  h3 { font-size: 1.05rem; margin-bottom: 8px; }
+  p { margin: 0; }
+  code, pre { font-family: ui-monospace, SFMono-Regular, Menlo, Consolas, "Liberation Mono", monospace; }
+
+  /* Hero */
+  .hero { padding: 80px 0 64px; border-top: 0; }
+  .eyebrow { color: var(--accent); font-size: 0.85rem; font-weight: 600; letter-spacing: 0.08em; margin-bottom: 14px; }
+  .hero h1 { font-size: clamp(2rem, 6.4vw, 3.25rem); }
+  .lead { color: var(--muted); font-size: clamp(1rem, 2.4vw, 1.15rem); margin-top: 18px; max-width: 40em; }
+  .actions { margin-top: 28px; display: flex; flex-wrap: wrap; gap: 12px; }
+  .btn {
+    display: inline-flex; align-items: center; gap: 8px;
+    padding: 12px 22px; border-radius: 999px;
+    background: var(--accent); color: var(--accent-ink);
+    font-weight: 700; text-decoration: none;
+    transition: background-color .15s ease, transform .15s ease;
+  }
+  .btn:hover { background: #bae6fd; transform: translateY(-1px); }
+  .btn svg { width: 18px; height: 18px; fill: currentColor; }
+  .demo {
+    margin-top: 48px;
+    border: 1px solid var(--line);
+    border-radius: var(--radius);
+    background: var(--bg-2);
+    padding: 8px;
+  }
+  .demo img { border-radius: 8px; width: 100%; }
+
+  /* Features */
+  .features { display: grid; grid-template-columns: repeat(3, 1fr); gap: 16px; list-style: none; padding: 0; margin: 0; }
+  .card {
+    background: var(--bg-2); border: 1px solid var(--line); border-radius: var(--radius);
+    padding: 24px;
+  }
+  .card .num { color: var(--accent); font-size: 0.8rem; font-weight: 700; letter-spacing: 0.1em; display: block; margin-bottom: 10px; }
+  .card p { color: var(--muted); font-size: 0.95rem; }
+
+  /* Usage */
+  .usage { display: grid; grid-template-columns: 1fr 1fr; gap: 40px; }
+  .steps { margin: 0; padding: 0; list-style: none; counter-reset: s; }
+  .steps li { counter-increment: s; position: relative; padding-left: 40px; margin-bottom: 14px; }
+  .steps li::before {
+    content: counter(s); position: absolute; left: 0; top: 2px;
+    width: 26px; height: 26px; border-radius: 50%;
+    border: 1px solid var(--accent); color: var(--accent);
+    font-size: 0.8rem; font-weight: 700; display: grid; place-items: center; line-height: 1;
+  }
+  .ways { margin: 0; padding: 0; list-style: none; }
+  .ways li { padding: 10px 0; border-bottom: 1px solid var(--line); }
+  .ways li:first-child { padding-top: 0; }
+  .ways .label { color: var(--muted); font-size: 0.85rem; display: block; }
+  kbd {
+    font-family: inherit; font-size: 0.85em;
+    border: 1px solid var(--line); border-bottom-width: 2px; border-radius: 6px;
+    padding: 1px 7px; background: var(--bg-2); white-space: nowrap;
+  }
+  .inline-code { background: var(--bg-2); border: 1px solid var(--line); border-radius: 6px; padding: 1px 6px; font-size: 0.9em; word-break: break-all; }
+  .cli { margin-top: 48px; }
+  pre {
+    margin: 0; background: #0a1020; border: 1px solid var(--line); border-radius: var(--radius);
+    padding: 18px 20px; overflow-x: auto; font-size: 0.95rem; line-height: 1.6;
+  }
+  pre .prompt { color: var(--muted); user-select: none; }
+  .note { color: var(--muted); font-size: 0.9rem; margin-top: 12px; }
+  .sub { font-size: 1rem; margin-bottom: 16px; }
+
+  /* FAQ */
+  .faq { border-top: 1px solid var(--line); }
+  .faq details { border-bottom: 1px solid var(--line); }
+  .faq summary {
+    cursor: pointer; list-style: none; padding: 18px 32px 18px 0; position: relative; font-weight: 600;
+    transition: color .15s ease;
+  }
+  .faq summary::-webkit-details-marker { display: none; }
+  .faq summary::after {
+    content: "+"; position: absolute; right: 4px; top: 50%; transform: translateY(-50%);
+    color: var(--accent); font-size: 1.3rem; font-weight: 400;
+  }
+  .faq details[open] summary::after { content: "−"; }
+  .faq summary:hover { color: var(--accent); }
+  .faq .a { color: var(--muted); padding: 0 0 20px; }
+
+  /* Footer */
+  footer { border-top: 1px solid var(--line); padding: 36px 0 48px; color: var(--muted); font-size: 0.9rem; }
+  .foot { display: flex; flex-wrap: wrap; justify-content: space-between; gap: 16px; align-items: center; }
+  .foot nav { display: flex; flex-wrap: wrap; gap: 8px 24px; }
+  .foot a { color: var(--text); text-decoration: none; transition: color .15s ease; }
+  .foot a:hover { color: var(--accent); }
+
+  @media (max-width: 760px) {
+    section { padding: 56px 0; }
+    .hero { padding: 56px 0 48px; }
+    .features { grid-template-columns: 1fr; }
+    .usage { grid-template-columns: 1fr; gap: 32px; }
+  }
+  @media (prefers-reduced-motion: reduce) {
+    * { transition: none !important; }
+  }
+</style>
+</head>
+<body>
+
+<main>
+  <header class="hero">
+    <div class="wrap">
+      <p class="eyebrow">page-screenshot-tool</p>
+      <h1>ページ全体スクリーンショット</h1>
+      <p class="lead">Webページの全体を、1枚のPNGに。Chrome拡張＋一括保存CLI、オープンソースで公開中。</p>
+      <div class="actions">
+        <a class="btn" href="https://github.com/fairblue/page-screenshot-tool">
+          <svg viewBox="0 0 16 16" aria-hidden="true"><path d="M8 0C3.58 0 0 3.58 0 8c0 3.54 2.29 6.53 5.47 7.59.4.07.55-.17.55-.38 0-.19-.01-.82-.01-1.49-2.01.37-2.53-.49-2.69-.94-.09-.23-.48-.94-.82-1.13-.28-.15-.68-.52-.01-.53.63-.01 1.08.58 1.23.82.72 1.21 1.87.87 2.33.66.07-.52.28-.87.51-1.07-1.78-.2-3.64-.89-3.64-3.95 0-.87.31-1.59.82-2.15-.08-.2-.36-1.02.08-2.12 0 0 .67-.21 2.2.82.64-.18 1.32-.27 2-.27.68 0 1.36.09 2 .27 1.53-1.04 2.2-.82 2.2-.82.44 1.1.16 1.92.08 2.12.51.56.82 1.27.82 2.15 0 3.07-1.87 3.75-3.65 3.95.29.25.54.73.54 1.48 0 1.07-.01 1.93-.01 2.2 0 .21.15.46.55.38A8.013 8.013 0 0016 8c0-4.42-3.58-8-8-8z"/></svg>
+          GitHubで見る
+        </a>
+      </div>
+      <figure class="demo" style="margin-left:0;margin-right:0;margin-bottom:0">
+        <img src="https://raw.githubusercontent.com/fairblue/page-screenshot-tool/main/assets/demo.gif" alt="ページ全体スクリーンショットのデモ" loading="eager" decoding="async">
+      </figure>
+    </div>
+  </header>
+
+  <section aria-labelledby="features-title">
+    <div class="wrap">
+      <h2 id="features-title">特徴</h2>
+      <ul class="features">
+        <li class="card">
+          <span class="num">01</span>
+          <h3>ページ全体を1枚に</h3>
+          <p>自動スクロールしながら撮影し、1枚のPNGにつなぎ合わせます。</p>
+        </li>
+        <li class="card">
+          <span class="num">02</span>
+          <h3>データ収集ゼロ</h3>
+          <p>コードはすべて公開、MITライセンス。利用状況データを外部に送ることはありません。</p>
+        </li>
+        <li class="card">
+          <span class="num">03</span>
+          <h3>2つの形</h3>
+          <p>Chrome拡張はログイン中のページも撮影可能。CLIはURLリストを一括保存でき、AIへの受け渡しやページの記録に便利です。</p>
+        </li>
+      </ul>
+    </div>
+  </section>
+
+  <section aria-labelledby="usage-title">
+    <div class="wrap">
+      <h2 id="usage-title">使い方</h2>
+      <div class="usage">
+        <div>
+          <h3 class="sub">Chrome拡張の導入</h3>
+          <ol class="steps">
+            <li><span class="inline-code">chrome://extensions</span> を開く</li>
+            <li>「デベロッパーモード」をオンにする</li>
+            <li>「パッケージ化されていない拡張機能を読み込む」でフォルダを選ぶ</li>
+          </ol>
+        </div>
+        <div>
+          <h3 class="sub">撮影する</h3>
+          <ul class="ways">
+            <li><span class="label">ボタン</span>ツールバーのボタンを押す</li>
+            <li><span class="label">ショートカット</span><kbd>⌘</kbd>+<kbd>Shift</kbd>+<kbd>S</kbd>（Mac）・<kbd>Ctrl</kbd>+<kbd>Shift</kbd>+<kbd>S</kbd>（Windows）</li>
+            <li><span class="label">右クリックメニュー</span>「ページ全体を画像で保存」</li>
+          </ul>
+        </div>
+      </div>
+      <div class="cli">
+        <h3 class="sub">CLIで一括保存</h3>
+        <pre><code><span class="prompt">$ </span>./shot.sh --file urls.txt</code></pre>
+        <p class="note">URLを引数で複数渡すこともできます。</p>
+      </div>
+    </div>
+  </section>
+
+  <section aria-labelledby="faq-title">
+    <div class="wrap">
+      <h2 id="faq-title">よくある質問</h2>
+      <div class="faq">
+        <details>
+          <summary>無料ですか？</summary>
+          <p class="a">はい。オープンソース（MITライセンス）で、無料で使えます。</p>
+        </details>
+        <details>
+          <summary>ログインが必要なページは撮れますか？</summary>
+          <p class="a">Chrome拡張は今見ているタブを撮影するので、ログイン中のページも撮れます。</p>
+        </details>
+        <details>
+          <summary>とても長いページはどうなりますか？</summary>
+          <p class="a">画像サイズの上限に合わせて、自動で縮小して保存されます。</p>
+        </details>
+      </div>
+    </div>
+  </section>
+</main>
+
+<footer>
+  <div class="wrap foot">
+    <nav aria-label="リンク">
+      <a href="https://github.com/fairblue/page-screenshot-tool">GitHub</a>
+      <a href="https://fairblue.github.io/">ポートフォリオ</a>
+      <a href="https://x.com/9ylxb">X</a>
+    </nav>
+    <p>MIT License</p>
+  </div>
+</footer>
+
+<script data-goatcounter="https://fairblue.goatcounter.com/count" async src="//gc.zgo.at/count.js"></script>
+</body>
+</html>
