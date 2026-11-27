@@ -162,6 +162,19 @@ async function main() {
     try {
       await page.goto(url, { waitUntil: 'domcontentloaded', timeout: 30000 });
       await page.waitForTimeout(opts.wait);
+      // 事前スクロール: スクロールで発火するアニメーションや遅延読み込み画像を撮影前にすべて表示させる
+      await page.evaluate(async () => {
+        const sleep = (ms) => new Promise((r) => setTimeout(r, ms));
+        const step = Math.max(1, Math.floor(window.innerHeight * 0.9));
+        for (let y = 0, i = 0; y < document.documentElement.scrollHeight && i < 200; y += step, i++) {
+          window.scrollTo(0, y);
+          await sleep(350);
+        }
+        window.scrollTo(0, document.documentElement.scrollHeight);
+        await sleep(600);
+        window.scrollTo(0, 0);
+        await sleep(600);
+      });
       const buf = await page.screenshot({ fullPage: opts.fullPage, type: opts.format });
       writeFileSync(path.join(opts.out, name), buf);
       const { w, h } = imageSize(buf, opts.format);
