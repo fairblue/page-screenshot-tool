@@ -7,6 +7,8 @@ Save an entire web page as a single PNG image. Two tools in one repo:
 
 Zero data collection. Fully open source (MIT).
 
+**紹介ページ / Landing page**: https://fairblue.github.io/page-screenshot-tool/
+
 ![Demo](assets/demo.gif)
 
 ## Chrome extension
