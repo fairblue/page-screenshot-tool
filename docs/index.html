@@ -105,6 +105,25 @@
   pre .prompt { color: var(--muted); user-select: none; }
   .note { color: var(--muted); font-size: 0.9rem; margin-top: 12px; }
   .sub { font-size: 1rem; margin-bottom: 16px; }
+  .install { display: grid; gap: 16px; list-style: none; padding: 0; margin: 0; counter-reset: step; }
+  .install li {
+    counter-increment: step; display: grid; grid-template-columns: 64px 1fr; gap: 20px; align-items: start;
+    background: var(--bg-2); border: 1px solid var(--line); border-radius: var(--radius); padding: 24px;
+  }
+  .install li::before {
+    content: counter(step); width: 64px; height: 64px; border-radius: 50%;
+    border: 2px solid var(--accent); color: var(--accent);
+    font-size: 1.9rem; font-weight: 700; line-height: 1; display: grid; place-items: center;
+  }
+  .install h4 { font-size: 1.05rem; line-height: 1.35; margin: 0 0 8px; }
+  .install p { color: var(--muted); font-size: 0.95rem; }
+  .install p + p { margin-top: 6px; }
+  .install-meta { display: flex; flex-wrap: wrap; gap: 4px 24px; color: var(--muted); font-size: 0.9rem; margin: 16px 0 0; padding: 0; list-style: none; }
+
+  /* Mobile */
+  .mobile { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; list-style: none; padding: 0; margin: 0; }
+  .mobile ol { margin: 0; padding-left: 1.3em; color: var(--muted); font-size: 0.95rem; }
+  .mobile .card p + ol, .mobile ol + p { margin-top: 8px; }
 
   /* FAQ */
   .faq { border-top: 1px solid var(--line); }
@@ -134,6 +153,9 @@
     .hero { padding: 56px 0 48px; }
     .features { grid-template-columns: 1fr; }
     .usage { grid-template-columns: 1fr; gap: 32px; }
+    .install li { grid-template-columns: 48px 1fr; gap: 16px; padding: 20px; }
+    .install li::before { width: 48px; height: 48px; font-size: 1.5rem; }
+    .mobile { grid-template-columns: 1fr; }
   }
   @media (prefers-reduced-motion: reduce) {
     * { transition: none !important; }
@@ -186,29 +208,69 @@
   <section aria-labelledby="usage-title">
     <div class="wrap">
       <h2 id="usage-title">使い方</h2>
-      <div class="usage">
-        <div>
-          <h3 class="sub">Chrome拡張の導入</h3>
-          <ol class="steps">
-            <li><span class="inline-code">chrome://extensions</span> を開く</li>
-            <li>「デベロッパーモード」をオンにする</li>
-            <li>「パッケージ化されていない拡張機能を読み込む」でフォルダを選ぶ</li>
-          </ol>
-        </div>
-        <div>
-          <h3 class="sub">撮影する</h3>
-          <ul class="ways">
-            <li><span class="label">ボタン</span>ツールバーのボタンを押す</li>
-            <li><span class="label">ショートカット</span><kbd>⌘</kbd>+<kbd>Shift</kbd>+<kbd>S</kbd>（Mac）・<kbd>Ctrl</kbd>+<kbd>Shift</kbd>+<kbd>S</kbd>（Windows）</li>
-            <li><span class="label">右クリックメニュー</span>「ページ全体を画像で保存」</li>
-          </ul>
-        </div>
-      </div>
+      <h3 class="sub">Chrome拡張の導入</h3>
+      <ol class="install">
+        <li>
+          <div>
+            <h4>拡張機能のフォルダをダウンロードする</h4>
+            <p><a href="https://github.com/fairblue/page-screenshot-tool">GitHubのページ</a>から「Code」→「Download ZIP」でダウンロードし、展開しておきます。</p>
+          </div>
+        </li>
+        <li>
+          <div>
+            <h4>Chromeに読み込む</h4>
+            <p>Chromeで <span class="inline-code">chrome://extensions</span> を開き、右上の「デベロッパーモード」をオンにします。</p>
+            <p>「パッケージ化されていない拡張機能を読み込む」を押し、ダウンロードしたフォルダの中の <span class="inline-code">chrome-extension</span> フォルダを選びます。</p>
+          </div>
+        </li>
+        <li>
+          <div>
+            <h4>ボタンを押して撮る</h4>
+            <p>保存したいページを開いて、ツールバーのボタンを押すだけです。</p>
+            <p>ショートカット <kbd>⌘</kbd>+<kbd>Shift</kbd>+<kbd>S</kbd>（Windowsは <kbd>Ctrl</kbd>+<kbd>Shift</kbd>+<kbd>S</kbd>）や、右クリックメニューの「ページ全体を画像で保存」でも撮れます。</p>
+          </div>
+        </li>
+      </ol>
+      <ul class="install-meta">
+        <li>所要時間は約2分です</li>
+        <li>Chromeウェブストアへの登録は準備中です</li>
+      </ul>
       <div class="cli">
         <h3 class="sub">CLIで一括保存</h3>
-        <pre><code><span class="prompt">$ </span>./shot.sh --file urls.txt</code></pre>
-        <p class="note">URLを引数で複数渡すこともできます。</p>
+        <pre><code><span class="prompt">$ </span>git clone https://github.com/fairblue/page-screenshot-tool
+<span class="prompt">$ </span>cd page-screenshot-tool/cli
+<span class="prompt">$ </span>npm install
+<span class="prompt">$ </span>npx playwright install chromium
+<span class="prompt">$ </span>./shot.sh https://example.com</code></pre>
+        <p class="note">URLは複数並べられます。<span class="inline-code">./shot.sh --file urls.txt</span> で、ファイルに書いたURLをまとめて保存することもできます。</p>
       </div>
+    </div>
+  </section>
+
+  <section aria-labelledby="mobile-title">
+    <div class="wrap">
+      <h2 id="mobile-title">スマホでページ全体を撮りたい方へ</h2>
+      <p class="lead" style="margin-top:0;margin-bottom:24px">このツールはパソコン専用です。スマホのChromeでは拡張機能が使えないためです。スマホでは、OS標準の機能で無料でページ全体を保存できます。</p>
+      <ul class="mobile">
+        <li class="card">
+          <h3>iPhoneの場合</h3>
+          <ol>
+            <li>Safariでページを開く</li>
+            <li>スクリーンショットを撮る</li>
+            <li>左下に出るプレビューをタップして「フルページ」を選ぶ</li>
+            <li>「完了」から「写真に保存」を選ぶ</li>
+          </ol>
+          <p>これでページ全体が画像として保存されます。</p>
+        </li>
+        <li class="card">
+          <h3>Androidの場合</h3>
+          <p>次のどちらかの方法で撮れます。</p>
+          <ol>
+            <li>Chromeの「共有」メニューから「ロングスクリーンショット」を使う</li>
+            <li>電源ボタン＋音量ボタンでスクリーンショットを撮り、「キャプチャ範囲を拡大」を使う</li>
+          </ol>
+        </li>
+      </ul>
     </div>
   </section>
 
